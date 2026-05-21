@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Helmet Locker
+Comment=Helmet locker access control
+Exec=/home/pi/helmetlocker-venv/bin/python /home/pi/helmetlocker/main.py
+Path=/home/pi/helmetlocker
+Icon=security-high
+Terminal=false
+Categories=Utility;
+X-GNOME-Autostart-enabled=true

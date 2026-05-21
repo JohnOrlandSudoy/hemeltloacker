@@ -1,0 +1,197 @@
+#:kivy 2.3.0
+
+<StatusLabel@Label>:
+    size_hint_y: None
+    height: dp(48)
+    text_size: self.width, None
+    halign: "center"
+    valign: "middle"
+    color: 0.9, 0.9, 0.9, 1
+    font_size: sp(16)
+
+<MenuButton@Button>:
+    size_hint_y: None
+    height: dp(72)
+    font_size: sp(22)
+    background_color: 0.2, 0.45, 0.75, 1
+    background_normal: ""
+    background_down: ""
+
+<ScreenManager>:
+    HomeScreen:
+    RegisterScreen:
+    UnlockScreen:
+    AdminScreen:
+
+<HomeScreen>:
+    name: "home"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(24)
+        spacing: dp(16)
+        canvas.before:
+            Color:
+                rgba: 0.08, 0.1, 0.14, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: "Helmet Locker"
+            font_size: sp(32)
+            bold: True
+            size_hint_y: None
+            height: dp(60)
+            color: 1, 1, 1, 1
+        Label:
+            text: "Tap to register or unlock"
+            font_size: sp(16)
+            size_hint_y: None
+            height: dp(36)
+            color: 0.7, 0.75, 0.8, 1
+        MenuButton:
+            text: "Unlock Locker"
+            on_release: root.manager.current = "unlock"
+        MenuButton:
+            text: "Register User"
+            on_release: root.manager.current = "register"
+        MenuButton:
+            text: "Admin"
+            background_color: 0.35, 0.35, 0.4, 1
+            on_release: root.manager.current = "admin"
+        Widget:
+
+<RegisterScreen>:
+    name: "register"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(12)
+        canvas.before:
+            Color:
+                rgba: 0.08, 0.1, 0.14, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: "Register New User"
+            font_size: sp(26)
+            bold: True
+            size_hint_y: None
+            height: dp(50)
+            color: 1, 1, 1, 1
+        Label:
+            text: "Full name:"
+            size_hint_y: None
+            height: dp(28)
+            halign: "left"
+            text_size: self.size
+            color: 0.8, 0.8, 0.8, 1
+        TextInput:
+            id: name_input
+            hint_text: "Enter name"
+            multiline: False
+            font_size: sp(20)
+            size_hint_y: None
+            height: dp(48)
+        StatusLabel:
+            id: status_label
+            text: "Enter name, then tap Start Registration"
+        MenuButton:
+            text: "Start Registration"
+            on_release: root.start_registration()
+        MenuButton:
+            text: "Back"
+            background_color: 0.4, 0.4, 0.45, 1
+            on_release: root.go_home()
+
+<UnlockScreen>:
+    name: "unlock"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(12)
+        canvas.before:
+            Color:
+                rgba: 0.08, 0.1, 0.14, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: "Unlock Locker"
+            font_size: sp(26)
+            bold: True
+            size_hint_y: None
+            height: dp(50)
+            color: 1, 1, 1, 1
+        StatusLabel:
+            id: unlock_status
+            text: "Use fingerprint, RFID, or face"
+        MenuButton:
+            text: "Scan Fingerprint"
+            on_release: root.unlock_fingerprint()
+        MenuButton:
+            text: "Scan Face"
+            on_release: root.unlock_face()
+        Label:
+            text: "Or tap RFID card on reader"
+            font_size: sp(14)
+            size_hint_y: None
+            height: dp(30)
+            color: 0.65, 0.7, 0.75, 1
+        MenuButton:
+            text: "Back"
+            background_color: 0.4, 0.4, 0.45, 1
+            on_release: root.go_home()
+
+<AdminScreen>:
+    name: "admin"
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(20)
+        spacing: dp(10)
+        canvas.before:
+            Color:
+                rgba: 0.08, 0.1, 0.14, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        Label:
+            text: "Admin"
+            font_size: sp(26)
+            bold: True
+            size_hint_y: None
+            height: dp(44)
+            color: 1, 1, 1, 1
+        TextInput:
+            id: pin_input
+            hint_text: "Admin PIN"
+            password: True
+            multiline: False
+            size_hint_y: None
+            height: dp(44)
+        MenuButton:
+            text: "Unlock Admin"
+            size_hint_y: None
+            height: dp(56)
+            on_release: root.check_pin()
+        ScrollView:
+            id: user_scroll
+            do_scroll_x: False
+            GridLayout:
+                id: user_list
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(8)
+        StatusLabel:
+            id: admin_status
+            text: ""
+        MenuButton:
+            text: "Refresh Users"
+            size_hint_y: None
+            height: dp(56)
+            on_release: root.refresh_users()
+        MenuButton:
+            text: "Back"
+            background_color: 0.4, 0.4, 0.45, 1
+            on_release: root.go_home()
