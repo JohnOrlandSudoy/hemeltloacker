@@ -129,9 +129,19 @@ python -m hardware.camera      # face encoding test
 
 ## Using the app
 
-1. **Register User** — enter name → fingerprint (2 scans) → RFID tap → face at webcam.
-2. **Unlock Locker** — fingerprint button, face button, or tap RFID (background listen on unlock screen).
-3. **Admin** — default PIN `1234` (change in `config.py`) → list/delete users.
+1. **Unlock Locker** — live camera preview; **Scan Face**, **Scan Fingerprint**, or RFID.
+2. **Admin** (PIN `1234`) — **Register New User** (admin only), list/delete users.
+3. **Register** (from Admin only) — name → fingerprint → RFID → **Capture Face** on same screen.
+
+**Face (pro-style):** Green box = face clear and ready; yellow = adjust position/size; red = no face or multiple people. Registration auto-captures **8 samples** only when quality is good (unique per user). Unlock requires **4 consecutive** verified frames and distance below `FACE_MAX_DISTANCE` (stricter than before — random faces should not open the locker).
+
+Install `face_recognition` on PC/Pi for real enrollment (see `requirements-windows.txt` or full `requirements.txt` on Pi).
+
+**Windows — "Please install face_recognition_models" loop:** models may be installed but `setuptools` / `pkg_resources` is missing. Run:
+```cmd
+scripts\fix_face_windows.bat
+```
+Or: `pip install "setuptools>=65,<70" face_recognition_models face_recognition`
 
 Unlock policy (default): **any one** of fingerprint, RFID, or face (`UNLOCK_POLICY = "any_one"` in `config.py`).
 
@@ -146,7 +156,11 @@ Edit [`config.py`](config.py):
 | `FINGERPRINT_PORT` | `/dev/serial0` | AS608 serial |
 | `UNLOCK_DURATION_SEC` | 3 | Solenoid pulse length |
 | `UNLOCK_POLICY` | `any_one` | `any_one`, `two_of_three`, `all_three` |
-| `FACE_TOLERANCE` | 0.5 | Lower = stricter face match |
+| `FACE_TOLERANCE` / `FACE_MAX_DISTANCE` | 0.42 / 0.45 | Stricter = unique users only |
+| `FACE_ENROLL_SAMPLES_REQUIRED` | 8 | Auto-capture count when face clear |
+| `FACE_UNLOCK_CONFIRM_FRAMES` | 4 | Consecutive matches to unlock |
+| `PREVIEW_WIDTH` / `PREVIEW_HEIGHT` | 640 / 360 | Live camera preview size |
+| `CAMERA_MIRROR` | True | Mirror selfie view |
 | `ADMIN_PIN` | `1234` | Change in production |
 | `DB_PATH` | `/var/lib/helmetlocker/users.db` | When `HELMET_LOCKER_PI=1` |
 
@@ -165,16 +179,27 @@ helmetlocker/
 └── scripts/setup_pi.sh
 ```
 
-## Windows development (simulation)
+## Windows development (simulation + camera preview)
 
-No Pi hardware required — uses simulated sensors:
+No Pi hardware required — uses simulated sensors for fingerprint/RFID/solenoid. **Webcam preview works** if OpenCV is installed:
 
-```powershell
+```cmd
 cd helmetlocker
-$env:HELMET_LOCKER_SIMULATE="1"
-python -m hardware.solenoid
-python -m database.db
+venv\Scripts\activate.bat
+pip install -r requirements-windows.txt
+scripts\fix_face_windows.bat
+run.bat
 ```
+
+Or manually:
+```cmd
+set KIVY_GL_BACKEND=angle_sdl2
+python main.py
+```
+
+**If UI closes immediately with `Unable to get a Window` / `GL is not available`:** use `angle_sdl2` (included in `run.bat`), not `gl`.
+
+Optional for green face box and real matching on PC: `pip install face_recognition` (slow to install on Windows).
 
 Optional env vars:
 
